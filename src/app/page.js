@@ -1,65 +1,237 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
 
 export default function Home() {
+  const [medications, setMedications] = useState([
+    { id: 1, name: "Napa Extra", dose: "500mg", time: "সকাল ৮টা", taken: false },
+    { id: 2, name: "Seclo", dose: "20mg", time: "সকাল ৮টা", taken: false },
+    { id: 3, name: "Vitamin D3", dose: "1 tablet", time: "রাত ৯টা", taken: false },
+  ]);
+
+  const [symptoms, setSymptoms] = useState([]);
+
+  const [name, setName] = useState("");
+  const [dose, setDose] = useState("");
+  const [time, setTime] = useState("");
+  const [symptomText, setSymptomText] = useState("");
+
+  function toggleTaken(id) {
+    setMedications(
+      medications.map((med) =>
+        med.id === id ? { ...med, taken: !med.taken } : med
+      )
+    );
+  }
+
+  function handleAddMedication(e) {
+    e.preventDefault();
+    if (name.trim() === "") return;
+
+    const newMed = {
+      id: Date.now(),
+      name: name,
+      dose: dose,
+      time: time,
+      taken: false,
+    };
+
+    setMedications([...medications, newMed]);
+    setName("");
+    setDose("");
+    setTime("");
+  }
+
+  function handleDeleteMedication(id) {
+    setMedications(medications.filter((med) => med.id !== id));
+  }
+
+  function handleAddSymptom(e) {
+    e.preventDefault();
+    if (symptomText.trim() === "") return;
+
+    const newSymptom = {
+      id: Date.now(),
+      text: symptomText,
+      date: new Date().toLocaleDateString("bn-BD"),
+    };
+
+    setSymptoms([newSymptom, ...symptoms]);
+    setSymptomText("");
+  }
+
+  function handleDeleteSymptom(id) {
+    setSymptoms(symptoms.filter((s) => s.id !== id));
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main style={{ maxWidth: "500px", margin: "40px auto", padding: "0 20px" }}>
+      <h1>MedTrack</h1>
+      <p>আজকের ওষুধের তালিকা</p>
+
+      <form
+        onSubmit={handleAddMedication}
+        style={{
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          padding: "16px",
+          marginBottom: "20px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="ওষুধের নাম (যেমন: Napa)"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <input
+          type="text"
+          placeholder="ডোজ (যেমন: 500mg)"
+          value={dose}
+          onChange={(e) => setDose(e.target.value)}
+          style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+        />
+        <input
+          type="text"
+          placeholder="সময় (যেমন: রাত ৯টা)"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+        />
+        <button
+          type="submit"
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "none",
+            backgroundColor: "#2563eb",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          ওষুধ যোগ করো
+        </button>
+      </form>
+
+      <div style={{ marginBottom: "30px" }}>
+        {medications.map((med) => (
+          <div
+            key={med.id}
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              padding: "12px",
+              marginBottom: "10px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              backgroundColor: med.taken ? "#070e4d" : "black",
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <input
+              type="checkbox"
+              checked={med.taken}
+              onChange={() => toggleTaken(med.id)}
+              style={{ width: "20px", height: "20px" }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div style={{ flex: 1 }}>
+              <h3 style={{ margin: 0, textDecoration: med.taken ? "line-through" : "none" }}>
+                {med.name}
+              </h3>
+              <p style={{ margin: 0 }}>ডোজ: {med.dose}</p>
+              <p style={{ margin: 0 }}>সময়: {med.time}</p>
+            </div>
+            <button
+              onClick={() => handleDeleteMedication(med.id)}
+              style={{
+                border: "none",
+                background: "none",
+                color: "#dc2626",
+                cursor: "pointer",
+                fontSize: "14px",
+              }}
+            >
+              মুছে ফেলো
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <h2>লক্ষণ / নোট</h2>
+      <p>শরীরে কী সমস্যা হচ্ছে সেটা লিখে রাখো, ডাক্তারকে দেখানোর জন্য</p>
+
+      <form
+        onSubmit={handleAddSymptom}
+        style={{
+          display: "flex",
+          gap: "8px",
+          marginBottom: "20px",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="যেমন: মাথা ব্যথা করছে"
+          value={symptomText}
+          onChange={(e) => setSymptomText(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            padding: "8px 16px",
+            borderRadius: "6px",
+            border: "none",
+            backgroundColor: "#16a34a",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          যোগ করো
+        </button>
+      </form>
+
+      <div>
+        {symptoms.map((s) => (
+          <div
+            key={s.id}
+            style={{
+              border: "1px solid #eee",
+              borderRadius: "8px",
+              padding: "10px",
+              marginBottom: "8px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <div>
+              <p style={{ margin: 0 }}>{s.text}</p>
+              <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>{s.date}</p>
+            </div>
+            <button
+              onClick={() => handleDeleteSymptom(s.id)}
+              style={{
+                border: "none",
+                background: "none",
+                color: "#dc2626",
+                cursor: "pointer",
+                fontSize: "14px",
+              }}
+            >
+              মুছে ফেলো
+            </button>
+          </div>
+        ))}
+      </div>
+    </main>
   );
 }
