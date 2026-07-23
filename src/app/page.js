@@ -1,20 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [medications, setMedications] = useState([
-    { id: 1, name: "Napa Extra", dose: "500mg", time: "সকাল ৮টা", taken: false },
-    { id: 2, name: "Seclo", dose: "20mg", time: "সকাল ৮টা", taken: false },
-    { id: 3, name: "Vitamin D3", dose: "1 tablet", time: "রাত ৯টা", taken: false },
-  ]);
-
+  const [medications, setMedications] = useState([]);
   const [symptoms, setSymptoms] = useState([]);
+  const [ loaded, setLoaded ] = useState(false);
 
   const [name, setName] = useState("");
   const [dose, setDose] = useState("");
   const [time, setTime] = useState("");
   const [symptomText, setSymptomText] = useState("");
+
+  useEffect(()=>{
+    const savedMeds = localStorage.getItem('medtrack-medications');  
+    const savedSymptoms = localStorage.getItem('medtrack-symptoms');
+
+    if (savedMeds) {
+      setMedications(JSON.parse(savedMeds));
+    } else {
+      setMedications([
+        { id: 1, name: "Napa Extra", dose: "500mg", time: "সকাল ৮টা", taken: false },
+        { id: 2, name: "Seclo", dose: "20mg", time: "সকাল ৮টা", taken: false },
+        { id: 3, name: "Vitamin D3", dose: "1 tablet", time: "রাত ৯টা", taken: false },
+      ]);
+    }
+
+    if (savedSymptoms) {
+      setSymptoms(JSON.parse(savedSymptoms));
+    }
+
+    setLoaded(true);
+  },[]);
+
+  useEffect(() => {
+    if (loaded) {
+      localStorage.setItem("medtrack-medications", JSON.stringify(medications));
+    }
+  }, [medications, loaded]);
+
+  useEffect(() => {
+    if (loaded) {
+      localStorage.setItem("medtrack-symptoms", JSON.stringify(symptoms));
+    }
+  }, [symptoms, loaded]);
+
 
   function toggleTaken(id) {
     setMedications(
