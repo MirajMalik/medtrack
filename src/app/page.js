@@ -1,20 +1,21 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Home() {
   const [medications, setMedications] = useState([]);
   const [symptoms, setSymptoms] = useState([]);
-  const [ loaded, setLoaded ] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const [name, setName] = useState("");
   const [dose, setDose] = useState("");
   const [time, setTime] = useState("");
   const [symptomText, setSymptomText] = useState("");
 
-  useEffect(()=>{
-    const savedMeds = localStorage.getItem('medtrack-medications');  
-    const savedSymptoms = localStorage.getItem('medtrack-symptoms');
+  useEffect(() => {
+    const savedMeds = localStorage.getItem("medtrack-medications");
+    const savedSymptoms = localStorage.getItem("medtrack-symptoms");
 
     if (savedMeds) {
       setMedications(JSON.parse(savedMeds));
@@ -31,7 +32,7 @@ export default function Home() {
     }
 
     setLoaded(true);
-  },[]);
+  }, []);
 
   useEffect(() => {
     if (loaded) {
@@ -44,7 +45,6 @@ export default function Home() {
       localStorage.setItem("medtrack-symptoms", JSON.stringify(symptoms));
     }
   }, [symptoms, loaded]);
-
 
   function toggleTaken(id) {
     setMedications(
@@ -94,173 +94,147 @@ export default function Home() {
     setSymptoms(symptoms.filter((s) => s.id !== id));
   }
 
+  const takenCount = medications.filter((m) => m.taken).length;
+  const sortedMedications = [...medications].sort((a, b) => a.taken - b.taken);
+
   return (
-    <main style={{ maxWidth: "500px", margin: "40px auto", padding: "0 20px" }}>
-      <h1>MedTrack</h1>
-      <p>আজকের ওষুধের তালিকা</p>
+    <main className="min-h-screen bg-slate-900 py-10 px-4">
+      <div className="max-w-md mx-auto">
 
-      <form
-        onSubmit={handleAddMedication}
-        style={{
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          padding: "16px",
-          marginBottom: "20px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="ওষুধের নাম (যেমন: Napa)"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
-        />
-        <input
-          type="text"
-          placeholder="ডোজ (যেমন: 500mg)"
-          value={dose}
-          onChange={(e) => setDose(e.target.value)}
-          style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
-        />
-        <input
-          type="text"
-          placeholder="সময় (যেমন: রাত ৯টা)"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
-        />
-        <button
-          type="submit"
-          style={{
-            padding: "10px",
-            borderRadius: "6px",
-            border: "none",
-            backgroundColor: "#2563eb",
-            color: "white",
-            cursor: "pointer",
-          }}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-teal-100 mb-1">MedTrack</h1>
+          <p className="text-teal-500 text-sm">
+            {medications.length > 0
+              ? `${takenCount} / ${medications.length} ওষুধ খাওয়া হয়েছে আজ`
+              : "আজকের ওষুধ ও লক্ষণের হিসাব"}
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleAddMedication}
+          className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6 flex flex-col gap-2"
         >
-          ওষুধ যোগ করো
-        </button>
-      </form>
-
-      <div style={{ marginBottom: "30px" }}>
-        {medications.map((med) => (
-          <div
-            key={med.id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "12px",
-              marginBottom: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              backgroundColor: med.taken ? "#070e4d" : "black",
-            }}
-          >
+          <input
+            type="text"
+            placeholder="ওষুধের নাম (যেমন: Napa)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+          <div className="flex gap-2">
             <input
-              type="checkbox"
-              checked={med.taken}
-              onChange={() => toggleTaken(med.id)}
-              style={{ width: "20px", height: "20px" }}
+              type="text"
+              placeholder="ডোজ (500mg)"
+              value={dose}
+              onChange={(e) => setDose(e.target.value)}
+              className="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            <div style={{ flex: 1 }}>
-              <h3 style={{ margin: 0, textDecoration: med.taken ? "line-through" : "none" }}>
-                {med.name}
-              </h3>
-              <p style={{ margin: 0 }}>ডোজ: {med.dose}</p>
-              <p style={{ margin: 0 }}>সময়: {med.time}</p>
-            </div>
-            <button
-              onClick={() => handleDeleteMedication(med.id)}
-              style={{
-                border: "none",
-                background: "none",
-                color: "#dc2626",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
-            >
-              মুছে ফেলো
-            </button>
+            <input
+              type="text"
+              placeholder="সময় (রাত ৯টা)"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
           </div>
-        ))}
-      </div>
-
-      <h2>লক্ষণ / নোট</h2>
-      <p>শরীরে কী সমস্যা হচ্ছে সেটা লিখে রাখো, ডাক্তারকে দেখানোর জন্য</p>
-
-      <form
-        onSubmit={handleAddSymptom}
-        style={{
-          display: "flex",
-          gap: "8px",
-          marginBottom: "20px",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="যেমন: মাথা ব্যথা করছে"
-          value={symptomText}
-          onChange={(e) => setSymptomText(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            padding: "8px 16px",
-            borderRadius: "6px",
-            border: "none",
-            backgroundColor: "#16a34a",
-            color: "white",
-            cursor: "pointer",
-          }}
-        >
-          যোগ করো
-        </button>
-      </form>
-
-      <div>
-        {symptoms.map((s) => (
-          <div
-            key={s.id}
-            style={{
-              border: "1px solid #eee",
-              borderRadius: "8px",
-              padding: "10px",
-              marginBottom: "8px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+          <button
+            type="submit"
+            className="mt-1 bg-teal-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-teal-700 transition"
           >
-            <div>
-              <p style={{ margin: 0 }}>{s.text}</p>
-              <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>{s.date}</p>
-            </div>
-            <button
-              onClick={() => handleDeleteSymptom(s.id)}
-              style={{
-                border: "none",
-                background: "none",
-                color: "#dc2626",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
+            + ওষুধ যোগ করো
+          </button>
+        </form>
+
+        <div className="flex flex-col gap-2 mb-10">
+          {sortedMedications.map((med) => (
+            <div
+              key={med.id}
+              className={`flex items-center gap-3 rounded-xl border p-3 transition ${
+                med.taken
+                  ? "bg-teal-50 border-teal-200"
+                  : "bg-white border-slate-200"
+              }`}
             >
-              মুছে ফেলো
+              <input
+                type="checkbox"
+                checked={med.taken}
+                onChange={() => toggleTaken(med.id)}
+                className="w-5 h-5 accent-teal-600"
+              />
+              <div className="flex-1">
+                <h3
+                  className={`font-medium text-slate-800 ${
+                    med.taken ? "line-through opacity-60" : ""
+                  }`}
+                >
+                  {med.name}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {med.dose} {med.dose && med.time ? "•" : ""} {med.time}
+                </p>
+              </div>
+              <button
+                onClick={() => handleDeleteMedication(med.id)}
+                className="text-xs text-red-900 hover:underline"
+              >
+                মুছুন
+              </button>
+            </div>
+          ))}
+          {medications.length === 0 && (
+            <p className="text-sm text-slate-400 text-center py-4">
+              কোনো ওষুধ যোগ করা হয়নি
+            </p>
+          )}
+        </div>
+
+        <div>
+          <h2 className="text-lg font-bold text-teal-100 mb-1">লক্ষণ / নোট</h2>
+          <p className="text-xs text-teal-500 mb-3">
+            ডাক্তারকে দেখানোর জন্য লিখে রাখো
+          </p>
+
+          <form onSubmit={handleAddSymptom} className="flex gap-2 mb-4">
+            <input
+              type="text"
+              placeholder="যেমন: মাথা ব্যথা করছে"
+              value={symptomText}
+              onChange={(e) => setSymptomText(e.target.value)}
+              className="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-800 placeholder-slate-400 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-lg bg-teal-800 text-white text-sm font-medium hover:bg-slate-900 transition"
+            >
+              যোগ করো
             </button>
+          </form>
+
+          <div className="flex flex-col gap-2">
+            {symptoms.map((s) => (
+              <div
+                key={s.id}
+                className="flex justify-between items-center bg-white border border-slate-200 rounded-lg px-3 py-2"
+              >
+                <div>
+                  <p className="text-sm text-slate-800">{s.text}</p>
+                  <p className="text-xs text-slate-400">{s.date}</p>
+                </div>
+                <button
+                  onClick={() => handleDeleteSymptom(s.id)}
+                  className="text-xs text-red-900 hover:underline"
+                >
+                  মুছুন
+                </button>
+              </div>
+            ))}
+            {symptoms.length === 0 && (
+              <p className="text-sm text-slate-400 text-center py-4">
+                কোনো লক্ষণ যোগ করা হয়নি
+              </p>
+            )}
           </div>
-        ))}
+        </div>
       </div>
     </main>
   );
