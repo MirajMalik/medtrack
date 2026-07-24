@@ -10,26 +10,15 @@ export default function MedicationsPage() {
     const [time, setTime] = useState("");
 
 
-    useEffect(() => {
-        const savedMeds = localStorage.getItem("medtrack-medications");
-
-        if (savedMeds) {
-            setMedications(JSON.parse(savedMeds));
-        } else {
-            setMedications([
-            { id: 1, name: "Napa Extra", dose: "500mg", time: "সকাল ৮টা", taken: false },
-            { id: 2, name: "Seclo", dose: "20mg", time: "সকাল ৮টা", taken: false },
-            { id: 3, name: "Vitamin D3", dose: "1 tablet", time: "রাত ৯টা", taken: false },
-            ]);
-        }
+  useEffect(() => {
+    fetch("/api/medications")
+      .then((res) => res.json())
+      .then((data) => {
+        setMedications(data.medications);
         setLoaded(true);
-    }, []);
+      });
+  }, []);
 
-    useEffect(() => {
-        if (loaded) {
-            localStorage.setItem("medtrack-medications", JSON.stringify(medications));
-        }
-    }, [medications, loaded]);
 
   async function handleAddMedication(e) {
         e.preventDefault();
@@ -37,11 +26,9 @@ export default function MedicationsPage() {
         if (name.trim() === "") return;
 
         const newMed = {
-            id: Date.now(),
-            name: name,
-            dose: dose,
-            time: time,
-            taken: false,
+             name,
+             dose,
+             time,
         };
         
         setLoaded(true);
@@ -62,7 +49,7 @@ export default function MedicationsPage() {
           throw new Error(result.message || "Failed to add medication");
       }
 
-      setMedications([...medications, newMed]);
+      setMedications([...medications, result]);
       alert(result.message || "ওষুধ যোগ করা হয়েছে");
       
       setName("");
@@ -70,7 +57,8 @@ export default function MedicationsPage() {
       setTime("");
 
       setLoaded(false);
-  }
+  };
+  
 
   function toggleTaken(id) {
     setMedications(

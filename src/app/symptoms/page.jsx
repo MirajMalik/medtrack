@@ -15,17 +15,27 @@ const SymptomsPage = () => {
   }, [symptoms, loaded]);
 
  
-  function handleAddSymptom(e) {
+  async function handleAddSymptom(e) {
     e.preventDefault();
     if (symptomText.trim() === "") return;
 
-    const newSymptom = {
-      id: Date.now(),
+    const newSymptom = { 
       text: symptomText,
-      date: new Date().toLocaleDateString("bn-BD"),
     };
 
-    setSymptoms([newSymptom, ...symptoms]);
+    setLoaded(true);
+
+    const response = await fetch("/api/symptoms", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newSymptom),
+      });
+
+    const result = await response.json();
+
+    setSymptoms([result, ...symptoms]);
     setSymptomText("");
   }
 
