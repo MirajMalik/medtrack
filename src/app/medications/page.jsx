@@ -31,8 +31,9 @@ export default function MedicationsPage() {
         }
     }, [medications, loaded]);
 
-  function handleAddMedication(e) {
+  async function handleAddMedication(e) {
         e.preventDefault();
+
         if (name.trim() === "") return;
 
         const newMed = {
@@ -42,11 +43,33 @@ export default function MedicationsPage() {
             time: time,
             taken: false,
         };
+        
+        setLoaded(true);
 
-        setMedications([...medications, newMed]);
-        setName("");
-        setDose("");
-        setTime("");
+        const response = await fetch("/api/medications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newMed),
+      });
+
+      const result = await response.json();
+
+      console.log("result:", result);
+
+       if (!response.ok) {
+          throw new Error(result.message || "Failed to add medication");
+      }
+
+      setMedications([...medications, newMed]);
+      alert(result.message || "ওষুধ যোগ করা হয়েছে");
+      
+      setName("");
+      setDose("");
+      setTime("");
+
+      setLoaded(false);
   }
 
   function toggleTaken(id) {
@@ -82,6 +105,7 @@ export default function MedicationsPage() {
           className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6 flex flex-col gap-2"
         >
           <input
+            name="name"
             type="text"
             placeholder="ওষুধের নাম (যেমন: Napa)"
             value={name}
@@ -90,6 +114,7 @@ export default function MedicationsPage() {
           />
           <div className="flex gap-2">
             <input
+              name="dose"
               type="text"
               placeholder="ডোজ (500mg)"
               value={dose}
@@ -97,6 +122,7 @@ export default function MedicationsPage() {
               className="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
             <input
+              name="time"
               type="text"
               placeholder="সময় (রাত ৯টা)"
               value={time}
