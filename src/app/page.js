@@ -1,6 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function Home() {
+  const [tip, setTip] = useState("");
+
+  useEffect(() => {
+    async function fetchTip() {
+      try {
+        const response = await fetch("/api/tips");
+        const data = await response.json();
+        setTip(data.tip);
+      } catch (error) {
+        console.error("Error fetching tip:", error);
+      }
+    }
+
+    fetchTip();
+  }, []);
+
   return (
     <main className="min-h-screen bg-slate-50 py-10 px-4">
       <div className="max-w-md mx-auto text-center">
@@ -23,6 +42,11 @@ export default function Home() {
             লক্ষণ যোগ করো
           </Link>
         </div>
+        {tip && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-6 text-sm text-amber-800">
+              💡 {tip}
+            </div>
+      )}
       </div>
     </main>
   );
