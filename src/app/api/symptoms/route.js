@@ -1,9 +1,10 @@
 import {NextResponse} from "next/server";
+import { symptoms } from "@/lib/data";
 
-let symptoms = [];
+export const dynamic = "force-dynamic";
 
 export async function GET() {       
-    return NextResponse.json({ symptoms });
+    return NextResponse.json( symptoms );
 };
 
 export async function POST(request) {

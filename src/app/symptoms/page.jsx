@@ -9,11 +9,13 @@ const SymptomsPage = () => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (loaded) {
-      localStorage.setItem("medtrack-symptoms", JSON.stringify(symptoms));
-    }
-  }, [symptoms, loaded]);
-
+  fetch("/api/symptoms")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Fetched symptoms:", data);
+      setSymptoms(data);
+    });
+  }, []);
  
   async function handleAddSymptom(e) {
     e.preventDefault();
@@ -40,7 +42,7 @@ const SymptomsPage = () => {
   }
 
   async function handleDeleteSymptom(id) {
-    
+
     const response = await fetch(`/api/symptoms/${id}`, {
         method: "DELETE",
         headers: {
