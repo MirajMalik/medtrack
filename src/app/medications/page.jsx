@@ -43,9 +43,7 @@ export default function MedicationsPage() {
 
       const result = await response.json();
 
-      console.log("result:", result);
-
-       if (!response.ok) {
+      if (!response.ok) {
           throw new Error(result.message || "Failed to add medication");
       }
 
@@ -68,9 +66,21 @@ export default function MedicationsPage() {
     );
   }
 
-  function handleDeleteMedication(id) {
+  async function handleDeleteMedication(id) {
+    
+    const response = await fetch(`/api/medications/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+    });
+    
+    const result = await response.json();
     setMedications(medications.filter((med) => med.id !== id));
+    console.log(result.message || "ওষুধ মুছে ফেলা হয়েছে");
   }
+
+
 
   const takenCount = medications.filter((m) => m.taken).length;
   const sortedMedications = [...medications].sort((a, b) => a.taken - b.taken);
