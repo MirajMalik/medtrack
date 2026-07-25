@@ -39,9 +39,21 @@ const SymptomsPage = () => {
     setSymptomText("");
   }
 
-  function handleDeleteSymptom(id) {
+  async function handleDeleteSymptom(id) {
+    
+    const response = await fetch(`/api/symptoms/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+    });
+    
+    const result = await response.json();
     setSymptoms(symptoms.filter((s) => s.id !== id));
+    console.log(result.message || "লক্ষণ মুছে ফেলা হয়েছে");
   }
+
+
     return (
     <main className="min-h-screen bg-slate-50 py-10 px-4">
       <div className="max-w-md mx-auto">
