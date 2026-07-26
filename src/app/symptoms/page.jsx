@@ -42,6 +42,7 @@ const SymptomsPage = () => {
   }
 
   async function handleDeleteSymptom(id) {
+    console.log("Deleting ID:", id);
 
     const response = await fetch(`/api/symptoms/${id}`, {
         method: "DELETE",
@@ -49,9 +50,13 @@ const SymptomsPage = () => {
           "Content-Type": "application/json",
         },
     });
+    // console.log(response.status);
+    // console.log(response.statusText);
     
     const result = await response.json();
-    setSymptoms(symptoms.filter((s) => s.id !== id));
+    console.log("Deleted symptom:", result);
+
+    setSymptoms(symptoms.filter((s) => s._id !== id));
     console.log(result.message || "লক্ষণ মুছে ফেলা হয়েছে");
   }
 
@@ -84,7 +89,7 @@ const SymptomsPage = () => {
           <div className="flex flex-col gap-2">
             {symptoms.map((s) => (
               <div
-                key={s.id}
+                key={s._id}
                 className="flex justify-between items-center bg-white border border-slate-200 rounded-lg px-3 py-2"
               >
                 <div>
@@ -92,7 +97,7 @@ const SymptomsPage = () => {
                   <p className="text-xs text-slate-400">{s.date}</p>
                 </div>
                 <button
-                  onClick={() => handleDeleteSymptom(s.id)}
+                  onClick={() => handleDeleteSymptom(s._id)}
                   className="text-xs text-red-900 hover:underline"
                 >
                   মুছুন

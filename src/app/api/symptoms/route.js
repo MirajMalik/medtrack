@@ -1,10 +1,14 @@
 import {NextResponse} from "next/server";
 import { symptoms } from "@/lib/data";
+import connectDB from "@/lib/db";
+import Symptom from "@/lib/models/Symptom";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {       
-    return NextResponse.json( symptoms );
+    await connectDB();
+    const symptoms = await Symptom.find({});
+    return NextResponse.json(symptoms);
 };
 
 export async function POST(request) {
@@ -22,12 +26,13 @@ export async function POST(request) {
       );
     }
 
-    const newSymptoms = {
-        id: Date.now(),
+    const newSymptom = {
         text: text,
         date: new Date().toLocaleDateString("bn-BD"),
 
     };
-    symptoms.push(newSymptoms);
-    return NextResponse.json(newSymptoms);     
+    await connectDB();
+    const createdSymptom = await Symptom.create(newSymptom);
+    return NextResponse.json(createdSymptom);     
+       
 };

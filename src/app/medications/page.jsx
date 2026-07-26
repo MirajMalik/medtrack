@@ -14,10 +14,12 @@ export default function MedicationsPage() {
     fetch("/api/medications")
       .then((res) => res.json())
       .then((data) => {
-        setMedications(data.medications);
+        console.log("Fetched medications:", data);
+        setMedications(data);
         setLoaded(true);
       });
   }, []);
+
 
 
   async function handleAddMedication(e) {
@@ -61,7 +63,7 @@ export default function MedicationsPage() {
   function toggleTaken(id) {
     setMedications(
       medications.map((med) =>
-        med.id === id ? { ...med, taken: !med.taken } : med
+        med._id === id ? { ...med, taken: !med.taken } : med
       )
     );
   }
@@ -76,7 +78,7 @@ export default function MedicationsPage() {
     });
     
     const result = await response.json();
-    setMedications(medications.filter((med) => med.id !== id));
+    setMedications(medications.filter((med) => med._id !== id));
     console.log(result.message || "ওষুধ মুছে ফেলা হয়েছে");
   }
 
@@ -139,7 +141,7 @@ export default function MedicationsPage() {
         <div className="flex flex-col gap-2 mb-10">
           {sortedMedications.map((med) => (
             <div
-              key={med.id}
+              key={med.name}
               className={`flex items-center gap-3 rounded-xl border p-3 transition ${
                 med.taken
                   ? "bg-slate-50 border-teal-200"
@@ -149,7 +151,7 @@ export default function MedicationsPage() {
               <input
                 type="checkbox"
                 checked={med.taken}
-                onChange={() => toggleTaken(med.id)}
+                onChange={() => toggleTaken(med._id)}
                 className="w-5 h-5 accent-teal-600"
               />
               <div className="flex-1">
@@ -165,7 +167,7 @@ export default function MedicationsPage() {
                 </p>
               </div>
               <button
-                onClick={() => handleDeleteMedication(med.id)}
+                onClick={() => handleDeleteMedication(med._id)}
                 className="text-xs text-red-900 hover:underline"
               >
                 মুছুন

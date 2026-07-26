@@ -1,15 +1,19 @@
 import {NextResponse} from 'next/server';
 import { medications } from '@/lib/data';
+import connectDB from "@/lib/db";
+import Medication from "@/lib/models/Medication";
 
 export async function DELETE(request, { params }) { 
-  const { id }  = await params;
+  await connectDB();
+  const { id }  =  await params;
 
-  const index = medications.findIndex(
-    (med) => med.id === Number(id)
-);
+  const deletedMedication = await Medication.findByIdAndDelete(id);
 
-  if (index !== -1) {
-    medications.splice(index, 1);   
-}
-    return NextResponse.json({ message: "ওষুধ মুছে ফেলা হয়েছে" });
+  if (!deletedMedication) {
+    return NextResponse.json(
+      { message: "ওষুধ পাওয়া যায়নি" },
+      { status: 404 }
+    );
+  }
+  return NextResponse.json({ message: "ওষুধ মুছে ফেলা হয়েছে" });
 }
