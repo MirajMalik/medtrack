@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function MedicationsPage() {
     const [medications, setMedications] = useState([]);
@@ -155,13 +156,15 @@ export default function MedicationsPage() {
                 className="w-5 h-5 accent-teal-600"
               />
               <div className="flex-1">
-                <h3
-                  className={`font-medium text-slate-800 ${
-                    med.taken ? "line-through opacity-60" : ""
-                  }`}
-                >
+                <Link href={`/medications/${med._id}`} className="block">
+                    <h3
+                      className={`font-medium text-slate-800 hover:underline ${
+                      med.taken ? "line-through opacity-60" : ""
+                      }`}
+                    >
                   {med.name}
-                </h3>
+                    </h3>
+                </Link>
                 <p className="text-xs text-slate-500">
                   {med.dose} {med.dose && med.time ? "•" : ""} {med.time}
                 </p>
